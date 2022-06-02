@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react';
 import BlogList from "./BlogList";
+import useFetch from "./useFetch";
 
 //HOOKS
 // - useState() = Re-renders the server every time the state changes
@@ -8,37 +8,13 @@ import BlogList from "./BlogList";
 //   it could be used to fetch data or run an auth service
 
 const Home = () => {
-    const [blogs, setBlogs] = useState(null);
-    const [isPending, setIsPending] = useState(true);
-    const [error, setError] = useState(null);
-
-    // the empty [] dependency array marks that it won't run if the state changes
-    useEffect( () => {
-        async function fetchData(){
-            try{
-                const res = await fetch('http://localhost:8000/blogs');
-                if (!res.ok){
-                    throw Error('could not fetch the data for that resource');
-                }
-                const data = await res.json();
-                console.log(data);
-                setBlogs(data);
-                setIsPending(false);
-                setError(null);
-            }catch (e) {
-                setIsPending(false);
-                setError(e.message);
-            }
-        }
-        fetchData();
-        console.log("Use Effect");
-    }, []);
+    const {data, isPending, error} = useFetch('http://localhost:8000/blogs');
 
     return (
         <div className="home">
             {error && <div>{error}</div>}
             {isPending && <div>Loading...</div>}
-            {blogs && <BlogList blogs={blogs} title="All blogs!"/>}
+            {data && <BlogList blogs={data} title="All blogs!"/>}
         </div>
     );
 
