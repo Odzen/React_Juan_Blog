@@ -14,8 +14,6 @@ const Home = () => {
         {title: 'Web dev top tips', body : 'lorem ipsum...', author:'Juan', id:3}
     ]);
 
-    const [name, setName]= useState('mario');
-
     const handleDelete = id => {
         const newBlogs = blogs.filter(blog => blog.id !== id); // To look for the blogs that I want to keep
         setBlogs(newBlogs);
@@ -24,8 +22,7 @@ const Home = () => {
     // the empty [] dependency array marks that it won't run if the state changes
     useEffect(() => {
         console.log('use Effect ran');
-        console.log(name);
-    }, [name]);
+    }, []);
 
     return (
         <div className="home">
