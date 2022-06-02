@@ -9,17 +9,25 @@ import BlogList from "./BlogList";
 
 const Home = () => {
     const [blogs, setBlogs] = useState(null);
+    const [isPending, setIsPending] = useState(true);
+    const [error, setError] = useState(null);
 
     // the empty [] dependency array marks that it won't run if the state changes
     useEffect( () => {
         async function fetchData(){
             try{
                 const res = await fetch('http://localhost:8000/blogs');
+                if (!res.ok){
+                    throw Error('could not fetch the data for that resource');
+                }
                 const data = await res.json();
                 console.log(data);
                 setBlogs(data);
+                setIsPending(false);
+                setError(null);
             }catch (e) {
-                console.error(e);
+                setIsPending(false);
+                setError(e.message);
             }
         }
         fetchData();
@@ -28,6 +36,8 @@ const Home = () => {
 
     return (
         <div className="home">
+            {error && <div>{error}</div>}
+            {isPending && <div>Loading...</div>}
             {blogs && <BlogList blogs={blogs} title="All blogs!"/>}
         </div>
     );
