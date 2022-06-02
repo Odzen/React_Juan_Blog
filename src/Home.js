@@ -8,27 +8,27 @@ import BlogList from "./BlogList";
 //   it could be used to fetch data or run an auth service
 
 const Home = () => {
-    const [blogs, setBlogs] = useState([
-        {title: 'My new website', body : 'lorem ipsum...', author:'Juan', id:1},
-        {title: 'Welcome Party', body : 'lorem ipsum...', author:'Sebastian', id:2},
-        {title: 'Web dev top tips', body : 'lorem ipsum...', author:'Juan', id:3}
-    ]);
-
-    const handleDelete = id => {
-        const newBlogs = blogs.filter(blog => blog.id !== id); // To look for the blogs that I want to keep
-        setBlogs(newBlogs);
-    };
+    const [blogs, setBlogs] = useState(null);
 
     // the empty [] dependency array marks that it won't run if the state changes
-    useEffect(() => {
-        console.log('use Effect ran');
+    useEffect( () => {
+        async function fetchData(){
+            try{
+                const res = await fetch('http://localhost:8000/blogs');
+                const data = await res.json();
+                console.log(data);
+                setBlogs(data);
+            }catch (e) {
+                console.error(e);
+            }
+        }
+        fetchData();
+        console.log("Use Effect");
     }, []);
 
     return (
         <div className="home">
-            <BlogList blogs={blogs} title="All blogs!" handleDelete={handleDelete}/>
-            <button onClick={() => setName('luigi')}> Change name</button>
-            <p>{name}</p>
+            {blogs && <BlogList blogs={blogs} title="All blogs!"/>}
         </div>
     );
 
