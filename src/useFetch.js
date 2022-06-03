@@ -11,24 +11,34 @@ const useFetch= (url) => {
 
     // the empty [] dependency array marks that it won't run if the state changes
     useEffect( () => {
+
+        const abortCont = new AbortController();
+
         async function fetchData(){
             try{
-                const res = await fetch(url);
+                const res = await fetch(url, {signal: abortCont.signal});
                 if (!res.ok){
                     throw Error('could not fetch the data for that resource');
                 }
                 const data = await res.json();
-                console.log(data);
+                //console.log(data);
                 setData(data);
                 setIsPending(false);
                 setError(null);
             }catch (e) {
-                setIsPending(false);
-                setError(e.message);
+                if (e.name === 'AbortError'){
+                    console.log("Fetch Aborted");
+                }
+                else{
+                    setIsPending(false);
+                    setError(e.message);
+                }
             }
         }
         fetchData();
-        console.log("Use Effect");
+
+        return () => abortCont.abort();
+
     }, [url]);
 
     return {data, isPending, error};
